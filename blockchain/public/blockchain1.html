@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="js/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <title></title>
+    <script>
+        var userNameArray =
+        {
+            "3001": "Sunny",
+            "3002": "Sreetej",
+            "3003": "Taran"
+        };
+
+        $(document).ready(function () {
+
+            $("#username").html('<b>'+ userNameArray[document.location.port] + '</b>');
+
+            $("#publickey").change(function () {
+                var urlPubKey = $("#publickey option:selected").val()
+
+                if (urlPubKey !== "Select") {
+                    $.get(urlPubKey + "/public-key", function (data, status) {
+                        $("#publickeyspan").html(data.publicKey);
+                    });
+                }
+                else {
+                    $("#publickeyspan").html('');
+                }
+            })
+
+            $("#reftransact").click(function () {
+                $.get("/transaction", function (data, status) {
+                    $("#transactionDiv").html(JSON.stringify(data, null, 4));
+                });
+            });
+
+            $("#transact").click(function () {
+                var transactObj = {};
+                transactObj.recipient = $("#publickeyspan").text();
+                transactObj.amount = parseInt($("#noofcoins").val());
+
+                //alert(JSON.stringify(transactObj));
+
+                var settings = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "/transact",
+                    "method": "POST",
+                    "headers": {
+                        "Content-Type": "application/json",
+                        "Cache-Control": "no-cache",
+                    },
+                    "processData": false,
+                    "data": JSON.stringify(transactObj)
+                }
+
+                $.ajax(settings).done(function (response) {
+                    $("#transactionDiv").html(JSON.stringify(response, null, 4));
+                });
+
+            });
+
+
+            $("#refblockchain").click(function () {
+                $.get("/block", function (data, status) {
+                    $("#blockchaindiv").html(JSON.stringify(data, null, 4));
+                });
+            });
+
+            $("#minetransact").click(function () {
+                $.get("/mine-transactions", function (data, status) {
+                    $("#blockchaindiv").html(JSON.stringify(data, null, 4));
+                });
+            });
+        });
+    </script>
+    <style>
+        .bg-img {
+  /* The image used */
+  background-image: url("city-wallpaper-11.jpg");
+
+ min-height: 700px;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  
+  /* Needed to position the navbar */
+  position: relative;
+}
+        #publickey{
+            padding-left:60px;
+        }
+        #username{
+           /* padding-left:40px;*/
+           
+        }
+        #tcf{
+            padding-left:40%;
+        }
+        #tct{
+            padding-left:40%;
+        }
+        #publickeyspan{
+            padding-left:40%;
+        }
+        #minetransaction{
+            padding-left:40%;
+            color:
+        }
+        #blockchain{
+              padding-left:40%;
+        }
+        #transact {
+   /* position: absolute;
+    top: 8px;
+    right: 16px;*/
+    color: black;
+    font-size:15px;
+    background-color: Transparent;
+    background-image: none;
+     border-radius: 10px 10px 10px 10px;
+    border: 2px solid black;
+    padding: 10px 25px;
+    hover{background-color: #e7e7e7;}
+        }
+        #transferamount{
+            padding-left:40%;
+        }
+        #tp{
+            padding-left:40%;
+        }
+        #reftransact{
+             /*position: absolute;
+    top: 8px;
+    right: 16px;*/
+    color: black;
+    font-size:15px;
+             padding-left:40px;
+    background-color: Transparent;
+    background-image: none;
+     border-radius: 10px 10px 10px 10px;
+    border: 2px solid black;
+    padding: 10px 25px;
+    hover{background-color: #e7e7e7;};
+        }
+        #refblockchain
+        {
+             color: black;
+     left:180px;
+    font-size:15px;
+    background-color: Transparent;
+    background-image: none;
+     border-radius: 10px 10px 10px 10px;
+    border: 2px solid black;
+    padding: 10px 25px;
+    hover{background-color: #e7e7e7;};
+            margin-left: 50px;
+        }
+        #minetransact{
+    color: white;
+    font-size:15px;
+     padding-left:40px;
+    background-color: Transparent;
+    background-image: none;
+     border-radius: 10px 10px 10px 10px;
+    border: 2px solid black;
+    padding: 10px 25px;
+    hover{background-color: #e7e7e7;};
+        }
+        .box{
+            padding-top:50px;
+        }
+            #digilabel{
+        font:black;
+         font-size: 40px;
+        padding-left:44%;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="bg-img">
+        <h1 id="digilabel">DIGICOIN</h1>
+    <div class="box">
+    <div id="tcf">
+        Transfer Coins From : <span id="username"></span>
+    </div>
+    <br />
+    <div id="tct">
+        Transfer Coins To : <select id="publickey">
+            <option value="Select">Select</option>
+            <option value="http://localhost:3001">Sunny</option>
+            <option value="http://localhost:3002">Sreetej</option>
+            <option value="http://localhost:3003">Taran</option>
+        </select>
+    </div>
+    <span id="publickeyspan"></span>
+    <br /><br />
+
+    <div id="transferamount">
+        Transfer Amount: <input type="text" id="noofcoins" size="4" /> &nbsp;&nbsp;&nbsp;&nbsp;<button id="transact">Transact</button>
+    </div>
+
+    <br />
+
+    <div id="tp" style="background: #f1f1f1;">
+        Transaction Pool &nbsp;&nbsp;&nbsp;&nbsp;<button id="reftransact">Refresh</button>
+        <br />
+        <pre id="transactionDiv"></pre>
+    </div>
+
+    <div id="minetransaction">
+        Mine Transaction &nbsp;&nbsp;&nbsp;&nbsp;<button id="minetransact">Mine</button>
+    </div>
+
+    <br />
+
+    <div id="blockchain"style="background: #f1f1f1;">
+        Block Chain &nbsp;&nbsp;&nbsp;&nbsp;<button id="refblockchain">Refresh</button>
+        <br />
+        <pre id="blockchaindiv"></pre>
+    </div>
+    </div>
+    </div>
+</body>
+
+</html>
